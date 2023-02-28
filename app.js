@@ -114,7 +114,10 @@ app.get("/general", async (req, res) => {
 app.get("/sortexample", async (req, res) => {
     const connect = await db()
     // Sort by size.h in descending order
-    const findItem = await connect.find({ }, { sort: [ "size.h", "desc" ] }).toArray()
+    const findItem = await connect.find({ }, { sort: ["size.h", "desc"]}).toArray()
+    // This can be done using the following syntax: 
+    const findItemAlt = await connect.find({ }, { sort: { "size.h": -1 }}).toArray()
+    console.log(findItemAlt)
 
     findItem.length == 0
     ? res.status(404).json({
