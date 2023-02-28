@@ -94,21 +94,36 @@ app.get("/general", async (req, res) => {
             { item: "notebook"}
         ]
     }).toArray()
-
+    
     // $gt/$gte or $lt/$lte operator allows us to look for a number range
     // .sort() allows us to present data in ascending (1) or descending (-1) order
     let gtOperator = await connect.find({ qty: { $gt: 0, $lte: 100 } }).sort({qty: -1}).toArray()
-
     // Query for property within a set
     // Allows to find many values for the same property of a document
     let inSet = await connect.find({ item: { $in: ["journal", "notebook"] }}).toArray()
-
+    
     res.status(200).json({
         // orOperator
         // gtOperator
         inSet
     })
     await client.close()
+})
+
+// Sort example endpoint using options object within .find() method
+app.get("/sortexample", async (req, res) => {
+    const connect = await db()
+    // Sort by size.h in descending order
+    const findItem = await connect.find({ }, { sort: [ "size.h", "desc" ] }).toArray()
+
+    findItem.length == 0
+    ? res.status(404).json({
+        message: `Not found`
+    })
+    : res.status(200).json({
+        // Spread Operator Destructures findAll array
+        ...findItem
+    })
 })
 
 app.listen(PORT, HOST, () => {
